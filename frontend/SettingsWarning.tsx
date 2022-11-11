@@ -15,7 +15,7 @@ const SettingsWarning = () => {
                     Go to the settings interface, click on the engine
                     icon  (
                         <Icon name="cog" size={16} />
-                    ) and define all settings from configuration tab.
+                    ) and define all settings from the configuration tab.
                 </p>
             </Alert>
         </>

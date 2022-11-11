@@ -26,15 +26,19 @@ const App = () => {
     const globalConfig = useGlobalConfig();
 
     useEffect(() => {
+        getConfig()
+    });
+
+    const getConfig = ( ) => {
         const token =  globalConfig.get('ghPersonalToken') as string
         const name  =  globalConfig.get('organizationName') as string
 
-        if(token && token){
+        if(token && name){
             setConfigSetted(true);
             githubClient.orgName = name;
             githubClient.token   = token;
         }
-    });
+    }
 
     const [isShowingSettings, setIsShowingSettings] = useState(false);
     useSettingsButton(function () {
@@ -42,12 +46,19 @@ const App = () => {
         if(teams.length == 0)
             listTeam()
         
+        getConfig()
         reset()
     });
 
      const listTeam = async () => {
-        const teams_t = await githubClient.listTeamsByOrganization()        
-        setTeams(teams_t)
+        const result = await githubClient.listTeamsByOrganization()
+        if(result.status == 401){
+            reset()
+            flashAlert("Error loading the teams with the given credentials! ", "warning")
+        }
+        if(result.status == 200){
+            setTeams(await result.json())
+        }
     }
 
     const icons = <div className="icons"><PersonWorkspace color="#5577AA" /><CupStraw color="#55AA77" /></div>;
@@ -67,14 +78,14 @@ const App = () => {
 
             if (result.status == 200){
                 reset()
-                succesAlert("Collaborator added with success", "success")
+                flashAlert("Collaborator added with success", "success")
             } else {
                 reset()
-                succesAlert("Error to add a new collaborator! ", "warning")
+                flashAlert("Error to add a new collaborator! ", "warning")
             }
         }catch(e){
             reset()
-            succesAlert("Unexpected error to remove collaborator", "warning")
+            flashAlert("Unexpected error to remove collaborator", "warning")
             console.log(e)
         }
     }
@@ -92,13 +103,13 @@ const App = () => {
 
             if (result.status == 204){
                 reset()
-                succesAlert("Collaborator removed with success", "success")
+                flashAlert("Collaborator removed with success", "success")
             } else {
-                succesAlert("Error to remove collaborator", "warning")
+                flashAlert("Error to remove collaborator", "warning")
             }
         }catch(e){
             reset()
-            succesAlert("Unexpected error to remove collaborator", "warning")
+            flashAlert("Unexpected error to remove collaborator", "warning")
             console.log(e)
         }
 
@@ -179,7 +190,7 @@ const App = () => {
     }
 
 
-    const succesAlert = (message, type) => {
+    const flashAlert = (message, type) => {
         if(type == "success"){
             setAlertMessage(message) 
             setIconAlert('check')

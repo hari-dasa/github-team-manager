@@ -1,5 +1,5 @@
 export class GithubClient {
-    // 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
+    // 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
     public api;
     public orgName;
     public token;
@@ -21,9 +21,7 @@ export class GithubClient {
                 'Content-Type': 'application/json'
              }
          })
-        console.log("teams :")
-        console.log(result)
-        return result.json() 
+        return result
     }
 
     async addCollaborator(username, role, slug)
@@ -54,7 +52,6 @@ export class GithubClient {
                 'Content-Type': 'application/json'
              }
          });
-         console.log(result)
          return result
     }
 }
